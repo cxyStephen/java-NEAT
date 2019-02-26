@@ -62,6 +62,38 @@ public class Genome {
         return child;
     }
 
+    double compatibilityWith(Genome other) {
+        //measure the compatibility distance between this genome and another
+        double excessCoeff = 0; //TODO: this should go in the config
+        double differenceCoeff = 0;
+
+        //calculate disjoint and excess genes and average weight diff of matching genes
+        int matchingGenes = 0;
+        double totalWeightDiff = 0;
+        for(Connection connection : this.connections.keySet()) {
+            if(other.connections.keySet().contains(connection)) {
+                matchingGenes++;
+
+                double thisWeight = connection.weight;
+                double otherWeight = other.connections.get(connection).weight;
+                totalWeightDiff += Math.abs(thisWeight - otherWeight);
+            }
+        }
+
+        int disjointGenes = this.connections.size() + other.connections.size() - 2 * matchingGenes;
+        double avgWeightDiff = totalWeightDiff/matchingGenes;
+
+        //normalize for genome size (N = larger of the genomes or 1 if both are small)
+        int thisSize = this.connections.size();
+        int otherSize = other.connections.size();
+        int normalizingFactor = Math.max(thisSize, otherSize);
+        if(thisSize < 20 && otherSize < 20)
+            normalizingFactor = 1;
+
+        //return the compatibility distance delta
+        return (excessCoeff * disjointGenes)/normalizingFactor + (differenceCoeff * avgWeightDiff);
+    }
+
     void mutateConnectionWeight() {
         for(Connection connection : connections.keySet())
             connection.perturb();
