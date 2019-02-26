@@ -4,8 +4,20 @@ public class Connection {
     double weight;
     boolean enabled;
 
+    public Connection(Node in, Node out) {
+        this.in = in;
+        this.out = out;
+        this.weight = 1;
+    }
+
+    public Connection(Node in, Node out, double weight) {
+        this.in = in;
+        this.out = out;
+        this.weight = weight;
+    }
+
     public void perturb(){
-        //i think slightly modify weight here?
+        //TODO: i think slightly modify weight here?
     }
 
     public long getId(){

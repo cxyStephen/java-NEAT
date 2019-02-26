@@ -12,7 +12,7 @@ public class Genome {
 
     Random rng = new Random();
 
-    public Genome(){
+    public Genome() {
         nodes = new HashSet<>();
         connections = new HashMap<>();
         fitness = -1; //TODO: not sure what this value should be
@@ -24,13 +24,13 @@ public class Genome {
         this.fitness = fitness;
     }
 
-    public void mutate(){ //page 107
+    public void mutate() { //page 107
         mutateConnectionWeight();
         mutateAddConnection();
         mutateAddNode();
     }
 
-    public Genome cross(Genome other) {
+    public Genome cross(Genome other) { //TODO: when do genes get disabled?
         //disjoint and excess genes are inherited from more fit parent
         Genome fitterParent = this.fitness > other.fitness ? this : other;
         Genome otherParent = fitterParent == this ? other : this;
@@ -67,22 +67,64 @@ public class Genome {
             connection.perturb();
     }
 
-    void mutateAddConnection(){
-        //create a connection with random weight
+    void mutateAddConnection() {
+        //chance to mutate
+        if(rng.nextDouble() < 0.5) //TODO: config class to set chance
+            return;
+
+        //choose two valid random nodes and make a connection TODO: what's the weight?
+        Connection newConnection;
+        boolean valid;
+        do {
+            valid = true;
+
+            Node in = randomNode();
+            Node out = randomNode();
+            newConnection = new Connection(in, out);
+
+            if(in.equals(out) || connections.containsKey(newConnection))
+                valid = false;  //TODO: there should be other invalid cases
+            //can a connection create a cycle?
+        } while(!valid);
+
+        connections.put(newConnection, newConnection);
     }
 
-    void mutateAddNode(){
-        //split existing connection into two
+    void mutateAddNode() {
+        //chance to mutate
+        if(rng.nextDouble() < 0.5) //TODO: config class to set chance
+            return;
 
-        //delete a connection (in, out, weight)
-        //add new node
+        //can't add a node if there are no connections to split
+        if(connections.keySet().size() == 0)
+            return;
+
+        //choose a random connection to split
+        Connection removed = connections.remove(randomConnection());
+
+        //TODO: make packages so this import doesnt look dumb (and other reasons)
+        Node newNode = new Node(Node.NodeType.HIDDEN);
+        nodes.add(newNode);
+
         //add new connection from in->new (weight = 1)
+        Connection toNew = new Connection(removed.in, newNode);
         //add new connection from new->out (weight = weight)
+        Connection fromNew = new Connection(newNode, removed.out, removed.weight);
     }
 
     void addConnection(Connection connection) {
         connections.put(connection, connection);
         nodes.add(connection.in);
         nodes.add(connection.out);
+    }
+
+    //TODO: is there a way to do this under O(n) time?
+    Node randomNode() {
+        return null;
+    }
+
+    //TODO: is there a way to do this under O(n) time?
+    Connection randomConnection() {
+        return null;
     }
 }
