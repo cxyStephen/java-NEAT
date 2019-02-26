@@ -25,7 +25,7 @@ public class Species {
 
     public Genome electRepresentative() {
         //randomly select a genome to represent the species
-        int randomIndex = (int)(Math.random() * genomes.size());
+        int randomIndex = (int) (Math.random() * genomes.size());
         return genomes.get(randomIndex);
     }
 
@@ -40,6 +40,6 @@ public class Species {
 
     public double adjustedFitness() {
         //adjust fitness to protect topological innovation
-        return fitness/genomes.size();
+        return fitness / genomes.size();
     }
 }

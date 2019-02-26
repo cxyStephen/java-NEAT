@@ -11,7 +11,7 @@ public class Node {
     int id;
     NodeType type;
 
-    private Node(){}
+    private Node() {}
 
     public Node(NodeType type) {
         this.type = type;
