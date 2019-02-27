@@ -36,7 +36,7 @@ public class Node implements Comparable<Node>{
 
         //forward propagate to all connected nodes
         for(Node other : connected) {
-            Connection test = new Connection(this, other);
+            Connection test = new Connection(null, this, other);
             Connection actual = connections.get(test);
             if(actual != null)
                 other.value += value * actual.weight;

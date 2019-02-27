@@ -1,6 +1,9 @@
 import java.util.Random;
 
 public class Connection {
+
+    NEATConfig config;
+
     Node in;
     Node out;
     double weight;
@@ -8,8 +11,9 @@ public class Connection {
 
     Random rng = new Random();
 
-    public Connection(Node in, Node out) {
+    public Connection(NEATConfig config, Node in, Node out) {
         //create connection with default weight
+        this.config = config;
         this.in = in;
         this.out = out;
         this.weight = 1; //TODO: rand value from -2 to 2 i think
@@ -17,8 +21,9 @@ public class Connection {
         in.connected.add(out);
     }
 
-    public Connection(Node in, Node out, double weight) {
+    public Connection(NEATConfig config, Node in, Node out, double weight) {
         //create connection with custom weight
+        this.config = config;
         this.in = in;
         this.out = out;
         this.weight = weight;
@@ -32,7 +37,7 @@ public class Connection {
         this.out = parent.out;
         this.weight = parent.weight;
 
-        if (parent.isDisabled && rng.nextDouble() < 0.75) //TODO: disable chance in config
+        if (parent.isDisabled && rng.nextDouble() < config.getInheritDisabledRate())
             this.isDisabled = true;
     }
 

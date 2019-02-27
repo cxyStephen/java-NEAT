@@ -1,6 +1,11 @@
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeSet;
 
 public class Genome {
+
+    NEATConfig config;
 
     TreeSet<Node> nodes;
     Map<Connection, Connection> connections; //java set interface has no get method
@@ -8,20 +13,11 @@ public class Genome {
 
     Random rng = new Random();
 
-    public Genome() {
+    public Genome(NEATConfig config) {
         nodes = new TreeSet<>();
         connections = new HashMap<>();
+        this.config = config;
     }
-
-//    public Genome(List<Node> inputs, List<Node> outputs) {
-//        nodes = new HashSet<>();
-//        for(Node input : inputs) {
-//            nodes.add(input);
-//        }
-//
-//        this.nodes = nodes;
-//        this.connections = connections;
-//    }
 
     public void mutate() { //page 107
         mutateConnectionWeight();
@@ -37,7 +33,7 @@ public class Genome {
         //if the parents are of equal fitness, disjoint genes are randomly inherited
         double inheritDisjoint = this.fitness == other.fitness ? 0.5 : 1;
 
-        Genome child = new Genome();
+        Genome child = new Genome(config);
 
         //randomly inherit matching genes and inherit disjoint genes from fitter parent
         for (Connection connection : fitterParent.connections.keySet()) {
@@ -61,8 +57,8 @@ public class Genome {
 
     double compatibilityWith(Genome other) {
         //measure the compatibility distance between this genome and another
-        double excessCoeff = 0; //TODO: this should go in the config
-        double differenceCoeff = 0;
+        double excessCoeff = config.getExcessCoefficient();
+        double differenceCoeff = config.getDifferenceCoefficient();
 
         //calculate disjoint and excess genes and average weight diff of matching genes
         int matchingGenes = 0;
@@ -93,14 +89,14 @@ public class Genome {
 
     void mutateConnectionWeight() {
         for (Connection connection : connections.keySet()) {
-            if (rng.nextDouble() < 0.5) //TODO: config class to set chance
+            if (rng.nextDouble() < config.getWeightMutationRate())
                 connection.perturb();
         }
     }
 
     void mutateAddConnection() {
         //chance to mutate
-        if (rng.nextDouble() < 0.5) //TODO: config class to set chance
+        if (rng.nextDouble() < config.getAddConnectionMutationRate())
             return;
 
         //choose two valid random nodes and make a connection TODO: what's the weight?
@@ -120,7 +116,7 @@ public class Genome {
                 in = out;
                 out = temp;
             }
-            newConnection = new Connection(in, out);
+            newConnection = new Connection(config, in, out);
         //reroll if the connection already exists
         } while (connections.containsKey(newConnection));
 
@@ -129,7 +125,7 @@ public class Genome {
 
     void mutateAddNode() {
         //chance to mutate
-        if (rng.nextDouble() < 0.5) //TODO: config class to set chance
+        if (rng.nextDouble() < config.getAddNodeMutationRate())
             return;
 
         //can't add a node if there are no connections to split
@@ -143,8 +139,8 @@ public class Genome {
         Node newNode = new Node(Node.NodeType.HIDDEN, newLayer);
 
         //add new connection from in->new (weight = 1) and new->out (weight = weight)
-        Connection toNew = new Connection(disabled.in, newNode);
-        Connection fromNew = new Connection(newNode, disabled.out, disabled.weight);
+        Connection toNew = new Connection(config, disabled.in, newNode);
+        Connection fromNew = new Connection(config, newNode, disabled.out, disabled.weight);
         addConnection(toNew);
         addConnection(fromNew);
     }

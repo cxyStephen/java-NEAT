@@ -1,18 +1,21 @@
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 public class Population {
 
-    List<Species> species;
-    Queue<Genome> genomes; //TODO: should organisms be tracked instead??
+    NEATConfig config;
 
-    Genome bestGenome; //TODO: best organism?
+    List<Species> species = new ArrayList<>();
+    List<Organism> organisms = new ArrayList<>();
+
+    Organism topOrganism;
     int generation = 0;
 
-    public Population() {
-        for(int i = 0; i < 20; i++) { //TODO: initial size in config
-            Genome genome = new Genome();
-            genomes.add(genome);
+    public Population(NEATConfig config) {
+        this.config = config;
+        for(int i = 0; i < config.getInitialPopulationSize(); i++) {
+            Organism organism = new Organism(config.getInputs(), config.getNumOutputs());
+            organisms.add(organism);
         }
     }
 
