@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Genome {
 
-    Set<Node> nodes;
+    TreeSet<Node> nodes;
     Map<Connection, Connection> connections; //java set interface has no get method
     double fitness;
 
@@ -105,18 +105,24 @@ public class Genome {
 
         //choose two valid random nodes and make a connection TODO: what's the weight?
         Connection newConnection;
-        boolean valid;
+        Node in;
+        Node out;
         do {
-            valid = true;
+            //select two nodes that aren't on the same layer
+            do {
+                in = randomNode();
+                out = randomNode();
+            } while (in.layer == out.layer);
 
-            Node in = randomNode();
-            Node out = randomNode();
+            //the lower layer node should point to the higher layer
+            if(in.layer > out.layer) {
+                Node temp = in;
+                in = out;
+                out = temp;
+            }
             newConnection = new Connection(in, out);
-
-            if (in.equals(out) || connections.containsKey(newConnection))
-                valid = false;  //TODO: there should be other invalid cases
-            //can a connection create a cycle?
-        } while (!valid);
+        //reroll if the connection already exists
+        } while (connections.containsKey(newConnection));
 
         connections.put(newConnection, newConnection);
     }
@@ -157,13 +163,24 @@ public class Genome {
         nodes.add(connection.out);
     }
 
-    //TODO: is there a way to do this under O(n) time?
     Node randomNode() {
-        return null;
+        //generate a random index and iterate to that index
+        int randomIndex = rng.nextInt(nodes.size());
+        Node random = nodes.first();
+        for(int i = 0; i < randomIndex; i++)
+            random = nodes.higher(random);
+        return random;
     }
 
-    //TODO: is there a way to do this under O(n) time?
     Connection randomConnection() {
-        return null;
+        //generate a random index and iterate to that index
+        int randomIndex = rng.nextInt(connections.size());
+        int counter = 0;
+        for(Connection connection : connections.keySet()) {
+            if(counter == randomIndex)
+                return connection;
+            counter++;
+        }
+        return null; //should be unreachable
     }
 }

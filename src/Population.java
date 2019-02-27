@@ -15,4 +15,8 @@ public class Population {
             genomes.add(genome);
         }
     }
+
+    public void speciate(){
+
+    }
 }
