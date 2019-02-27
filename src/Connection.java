@@ -12,7 +12,9 @@ public class Connection {
         //create connection with default weight
         this.in = in;
         this.out = out;
-        this.weight = 1;
+        this.weight = 1; //TODO: rand value from -2 to 2 i think
+
+        in.connected.add(out);
     }
 
     public Connection(Node in, Node out, double weight) {
@@ -20,6 +22,8 @@ public class Connection {
         this.in = in;
         this.out = out;
         this.weight = weight;
+
+        in.connected.add(out);
     }
 
     public Connection(Connection parent) {

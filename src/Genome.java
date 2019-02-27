@@ -1,8 +1,4 @@
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class Genome {
 
@@ -13,16 +9,19 @@ public class Genome {
     Random rng = new Random();
 
     public Genome() {
-        nodes = new HashSet<>();
+        nodes = new TreeSet<>();
         connections = new HashMap<>();
-        fitness = -1; //TODO: not sure what this value should be
     }
 
-    public Genome(Set<Node> nodes, Map<Connection, Connection> connections, double fitness) {
-        this.nodes = nodes;
-        this.connections = connections;
-        this.fitness = fitness;
-    }
+//    public Genome(List<Node> inputs, List<Node> outputs) {
+//        nodes = new HashSet<>();
+//        for(Node input : inputs) {
+//            nodes.add(input);
+//        }
+//
+//        this.nodes = nodes;
+//        this.connections = connections;
+//    }
 
     public void mutate() { //page 107
         mutateConnectionWeight();
@@ -134,13 +133,19 @@ public class Genome {
         //choose a random connection to disable and split
         Connection disabled = randomConnection().disable();
         //TODO: make packages so this import doesnt look dumb (and other reasons)
-        Node newNode = new Node(Node.NodeType.HIDDEN);
+        int newLayer = disabled.in.layer/2 + disabled.out.layer/2;
+        Node newNode = new Node(Node.NodeType.HIDDEN, newLayer);
 
         //add new connection from in->new (weight = 1) and new->out (weight = weight)
         Connection toNew = new Connection(disabled.in, newNode);
         Connection fromNew = new Connection(newNode, disabled.out, disabled.weight);
         addConnection(toNew);
         addConnection(fromNew);
+    }
+
+    public void propagateInputs() {
+        for(Node node : nodes)
+            node.propagate(connections);
     }
 
     void addConnection(Connection connection) {
