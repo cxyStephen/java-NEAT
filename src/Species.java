@@ -6,7 +6,7 @@ public class Species {
 
     static int globalId = 0;
 
-    private List<Organism> organisms;
+    public List<Organism> organisms;
     private int numOrganisms;
     private double fitness;
     int id;
@@ -52,9 +52,10 @@ public class Species {
         return fitness / organisms.size();
     }
 
-    public void determineNumOrganisms(double populationFitness) {
+    public int determineNumOrganisms(double populationFitness) {
         //this species should have a number of organisms proportional to its relative fitness
         numOrganisms = (int) Math.round((adjustedFitness()/populationFitness) * config.getPopulationSize());
+        return numOrganisms;
     }
 
     public void cull() {

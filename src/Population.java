@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Population {
@@ -10,6 +12,7 @@ public class Population {
 
     Organism topOrganism;
     int generation = 0;
+    int staleness = 0;
 
     public Population(NEATConfig config) {
         this.config = config;
@@ -23,6 +26,7 @@ public class Population {
         mutateOrganisms();
         speciate();
         determineFitness();
+        findTopOrganism();
         reproduceSpecies();
         generation++;
     }
@@ -52,19 +56,53 @@ public class Population {
             organism.determineFitness();
     }
 
+    public void findTopOrganism() {
+        boolean newTopOrganism = false;
+
+        for (Organism organism : organisms) {
+            if (organism.genome.fitness > topOrganism.genome.fitness) {
+                topOrganism = organism;
+                newTopOrganism = true;
+                staleness = 0;
+            }
+        }
+
+        if(!newTopOrganism)
+            staleness++;
+    }
+
     public void reproduceSpecies() {
+        //if no improvements in n generations, only retain top two species
+        if (staleness > config.getStalenessThreshold())
+            killMostSpecies();
+
         //determine fitness of entire population
         double totalFitness = 0;
         for(Species specie : species)
             totalFitness += specie.adjustedFitness();
-        //when the fitness of the entire population does not improve for > 20 generations,
-        // only the top two species are allowed to reproduce. TODO
+
+        //determine how many organisms each species should contain
+        // axe the entire species if it wouldn't contain anything
+        for(int i = species.size() - 1; i >= 0; i--) {
+            Species specie = species.get(i);
+            if (specie.determineNumOrganisms(totalFitness) == 0)
+                species.remove(i);
+        }
+
+        //clear organisms to create new generation
+        organisms.clear();
 
         //kill poorly performing organisms and then create offspring
         for(Species specie : species) {
-            specie.determineNumOrganisms(totalFitness);
             specie.cull();
             specie.reproduce();
+            organisms.addAll(specie.organisms);
         }
+    }
+
+    public void killMostSpecies() {
+        Collections.sort(species, Comparator.comparingDouble(s -> s.adjustedFitness()));
+        while(species.size() > 2)
+            species.remove(species.size()-1);
     }
 }

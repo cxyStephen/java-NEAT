@@ -17,6 +17,7 @@ public class NEATConfig {
 
     private int populationSize;
     private double cullPercentage;
+    private int stalenessThreshold;
 
     //TODO: factory class for each component for extendability?
 
@@ -58,6 +59,9 @@ public class NEATConfig {
         public void cullPercentage(double n) {
             config.cullPercentage = n;
         }
+        public void stalenessThreshold(int n) {
+            config.stalenessThreshold = n;
+        }
 
         public NEATConfig build() {
             return config;
@@ -96,5 +100,8 @@ public class NEATConfig {
     }
     public double getCullPercentage() {
         return cullPercentage;
+    }
+    public int getStalenessThreshold() {
+        return stalenessThreshold;
     }
 }
