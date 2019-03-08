@@ -1,3 +1,5 @@
+package com.cxystephen.NEAT.Configuration;
+
 import java.util.List;
 
 public class NEATConfig {

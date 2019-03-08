@@ -1,3 +1,8 @@
+package com.cxystephen.NEAT;
+
+import com.cxystephen.NEAT.Node.NodeType;
+import com.cxystephen.NEAT.Configuration.NEATConfig;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -134,9 +139,9 @@ public class Genome {
 
         //choose a random connection to disable and split
         Connection disabled = randomConnection().disable();
-        //TODO: make packages so this import doesnt look dumb (and other reasons)
+
         int newLayer = disabled.in.layer/2 + disabled.out.layer/2;
-        Node newNode = new Node(Node.NodeType.HIDDEN, newLayer);
+        Node newNode = new Node(NodeType.HIDDEN, newLayer);
 
         //add new connection from in->new (weight = 1) and new->out (weight = weight)
         Connection toNew = new Connection(config, disabled.in, newNode);

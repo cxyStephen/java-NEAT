@@ -1,3 +1,7 @@
+package com.cxystephen.NEAT;
+
+import com.cxystephen.NEAT.Configuration.NEATConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 
