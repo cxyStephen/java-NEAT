@@ -54,7 +54,7 @@ public class Species {
 
     public void determineNumOrganisms(double populationFitness) {
         //this species should have a number of organisms proportional to its relative fitness
-        numOrganisms = (int) Math.round((fitness/populationFitness) * config.getPopulationSize());
+        numOrganisms = (int) Math.round((adjustedFitness()/populationFitness) * config.getPopulationSize());
     }
 
     public void cull() {
