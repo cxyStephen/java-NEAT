@@ -20,7 +20,7 @@ public class Connection {
         this.config = config;
         this.in = in;
         this.out = out;
-        this.weight = 1; //TODO: rand value from -2 to 2 i think
+        this.weight = (rng.nextDouble() * -2) + 1; //random weight in range (-1,1]
 
         in.connected.add(out);
     }
@@ -45,8 +45,15 @@ public class Connection {
             this.isDisabled = true;
     }
 
-    public void perturb() {
-        //TODO: i think slightly modify weight here?
+    public void mutateWeight() {
+        //some chance to slightly adjust the weight
+        if (rng.nextDouble() < config.getWeightPerturbRate())
+            weight += rng.nextGaussian()/50;
+        //otherwise, generate an entirely new weight
+        else
+            weight = (rng.nextDouble() * -2) + 1;
+
+        weight = Math.max(-1, Math.min(1, weight)); //clamp weight to [-1,1]
     }
 
     public Connection cross(Connection other, double inheritDisjoint) {

@@ -95,7 +95,7 @@ public class Genome {
     void mutateConnectionWeight() {
         for (Connection connection : connections.keySet()) {
             if (rng.nextDouble() < config.getWeightMutationRate())
-                connection.perturb();
+                connection.mutateWeight();
         }
     }
 
@@ -104,7 +104,7 @@ public class Genome {
         if (rng.nextDouble() < config.getAddConnectionMutationRate())
             return;
 
-        //choose two valid random nodes and make a connection TODO: what's the weight?
+        //choose two valid random nodes and make a connection
         Connection newConnection;
         Node in;
         Node out;
@@ -144,7 +144,7 @@ public class Genome {
         Node newNode = new Node(NodeType.HIDDEN, newLayer);
 
         //add new connection from in->new (weight = 1) and new->out (weight = weight)
-        Connection toNew = new Connection(config, disabled.in, newNode);
+        Connection toNew = new Connection(config, disabled.in, newNode, 1);
         Connection fromNew = new Connection(config, newNode, disabled.out, disabled.weight);
         addConnection(toNew);
         addConnection(fromNew);

@@ -14,6 +14,7 @@ public class NEATConfig {
     private double addNodeMutationRate;
     private double addConnectionMutationRate;
     private double weightMutationRate;
+    private double weightPerturbRate;
 
     private double inheritDisabledRate;
 
@@ -51,6 +52,9 @@ public class NEATConfig {
         }
         public void weightMutationRate(double n) {
             config.weightMutationRate = n;
+        }
+        public void weightPerturbRate(double n) {
+            config.weightPerturbRate = n;
         }
         public void inheritDisabledRate(double n) {
             config.inheritDisabledRate = n;
@@ -93,6 +97,9 @@ public class NEATConfig {
     }
     public double getWeightMutationRate() {
         return weightMutationRate;
+    }
+    public double getWeightPerturbRate() {
+        return weightPerturbRate;
     }
     public double getInheritDisabledRate() {
         return inheritDisabledRate;

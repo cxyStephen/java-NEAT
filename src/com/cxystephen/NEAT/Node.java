@@ -24,6 +24,7 @@ public class Node implements Comparable<Node>{
     List<Node> connected; //all nodes to forward propagate to
 
     private Node() {}
+    //TODO: bias nodes??
 
     public Node(NodeType type, int layer) {
         this.type = type;
