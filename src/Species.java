@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Species {
 
@@ -8,8 +7,11 @@ public class Species {
     static int globalId = 0;
 
     private List<Organism> organisms;
+    private int numOrganisms;
     private double fitness;
     int id;
+
+    Random rng = new Random();
 
     public Species(NEATConfig config, Organism representative) {
         //create a new species with a organism that doesn't belong to other species
@@ -19,18 +21,16 @@ public class Species {
         organisms.add(representative);
     }
 
-    public Species(NEATConfig config, Species prevGeneration) {
-        //create a new generation of the same species from an old generation
-        this.config = config;
-        this.id = prevGeneration.id;
-        organisms = new ArrayList<>();
-        organisms.add(prevGeneration.electRepresentative());
-    }
+//    public Species(NEATConfig config, Species prevGeneration) {
+//        //create a new generation of the same species from an old generation
+//        this.config = config;
+//        this.id = prevGeneration.id;
+//        organisms = new ArrayList<>();
+//        organisms.add(prevGeneration.electRepresentative());
+//    }
 
-    public Organism electRepresentative() {
-        //randomly select an organism to represent the species
-        int randomIndex = (int) (Math.random() * organisms.size());
-        return organisms.get(randomIndex);
+    public Organism randomOrganism() {
+        return organisms.get(rng.nextInt(organisms.size()));
     }
 
     public boolean addOrganism(Organism organism) {
@@ -50,5 +50,22 @@ public class Species {
     public double adjustedFitness() {
         //adjust fitness to protect topological innovation
         return fitness / organisms.size();
+    }
+
+    public void determineNumOrganisms(double populationFitness) {
+        //this species should have a number of organisms proportional to its relative fitness
+        numOrganisms = (int) Math.round((fitness/populationFitness) * config.getPopulationSize());
+    }
+
+    public void cull() {
+        Collections.sort(organisms, Comparator.comparingDouble(o -> o.genome.fitness));
+        int culledSize = (int) Math.round(numOrganisms * config.getCullPercentage());
+        while(organisms.size() > culledSize)
+            organisms.remove(organisms.size()-1);
+    }
+
+    public void reproduce() {
+        while (organisms.size() < numOrganisms)
+            organisms.add(randomOrganism().createOffspring(randomOrganism()));
     }
 }

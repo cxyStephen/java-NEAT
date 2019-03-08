@@ -6,8 +6,16 @@ public class Organism {
     List<Node> inputNodes;
     List<Node> outputNodes;
 
-    public Organism(List<Double> input, int outputs) {
+    NEATConfig config;
 
+    public Organism(NEATConfig config) {
+        //TODO: initialize default genome (no connections)
+        this.config = config;
+    }
+
+    public Organism(NEATConfig config, Genome genome) {
+        this.config = config;
+        this.genome = genome;
     }
 
     public void setInput(List<Double> inputs) {
@@ -21,6 +29,10 @@ public class Organism {
         for (Node output : outputNodes)
             out.add(output.value);
         return out;
+    }
+
+    public Organism createOffspring(Organism other) {
+        return new Organism(config, this.genome.cross(other.genome));
     }
 
     public void determineFitness() {

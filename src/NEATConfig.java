@@ -15,7 +15,8 @@ public class NEATConfig {
 
     private double inheritDisabledRate;
 
-    private int initialPopulationSize;
+    private int populationSize;
+    private double cullPercentage;
 
     //TODO: factory class for each component for extendability?
 
@@ -51,8 +52,11 @@ public class NEATConfig {
         public void inheritDisabledRate(double n) {
             config.inheritDisabledRate = n;
         }
-        public void initialPopulationSize(int n) {
-            config.initialPopulationSize = n;
+        public void populationSize(int n) {
+            config.populationSize = n;
+        }
+        public void cullPercentage(double n) {
+            config.cullPercentage = n;
         }
 
         public NEATConfig build() {
@@ -87,7 +91,10 @@ public class NEATConfig {
     public double getInheritDisabledRate() {
         return inheritDisabledRate;
     }
-    public int getInitialPopulationSize() {
-        return initialPopulationSize;
+    public int getPopulationSize() {
+        return populationSize;
+    }
+    public double getCullPercentage() {
+        return cullPercentage;
     }
 }
