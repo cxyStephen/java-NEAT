@@ -3,43 +3,52 @@ import java.util.List;
 
 public class Species {
 
+    NEATConfig config;
+
     static int globalId = 0;
 
-    private List<Genome> genomes;
+    private List<Organism> organisms;
     private double fitness;
     int id;
 
-    public Species(Genome representative) {
-        //create a new species with a genome that doesn't belong to other species
+    public Species(NEATConfig config, Organism representative) {
+        //create a new species with a organism that doesn't belong to other species
+        this.config = config;
         this.id = globalId++;
-        genomes = new ArrayList<>();
-        genomes.add(representative);
+        organisms = new ArrayList<>();
+        organisms.add(representative);
     }
 
-    public Species(Species prevGeneration) {
+    public Species(NEATConfig config, Species prevGeneration) {
         //create a new generation of the same species from an old generation
+        this.config = config;
         this.id = prevGeneration.id;
-        genomes = new ArrayList<>();
-        genomes.add(prevGeneration.electRepresentative());
+        organisms = new ArrayList<>();
+        organisms.add(prevGeneration.electRepresentative());
     }
 
-    public Genome electRepresentative() {
-        //randomly select a genome to represent the species
-        int randomIndex = (int) (Math.random() * genomes.size());
-        return genomes.get(randomIndex);
+    public Organism electRepresentative() {
+        //randomly select an organism to represent the species
+        int randomIndex = (int) (Math.random() * organisms.size());
+        return organisms.get(randomIndex);
     }
 
-    public boolean addGenome(Genome genome) {
-        fitness += genome.fitness;
-        return genomes.add(genome);
+    public boolean addOrganism(Organism organism) {
+        fitness += organism.genome.fitness;
+        return organisms.add(organism);
     }
 
-    public Genome representative() {
-        return genomes.get(0);
+    public boolean belongs(Organism organism) {
+        double compatibility = organism.genome.compatibilityWith(representative().genome);
+        return compatibility <= config.getCompatibilityThreshold();
+    }
+
+    public Organism representative() {
+        return organisms.get(0);
     }
 
     public double adjustedFitness() {
         //adjust fitness to protect topological innovation
-        return fitness / genomes.size();
+        return fitness / organisms.size();
     }
 }

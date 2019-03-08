@@ -7,6 +7,7 @@ public class NEATConfig {
     //TODO: default values
     private double excessCoefficient;
     private double differenceCoefficient;
+    private double compatibilityThreshold;
 
     private double addNodeMutationRate;
     private double addConnectionMutationRate;
@@ -16,6 +17,7 @@ public class NEATConfig {
 
     private int initialPopulationSize;
 
+    //TODO: factory class for each component for extendability?
 
     private NEATConfig () {}
 
@@ -33,6 +35,9 @@ public class NEATConfig {
         }
         public void differenceCoefficient(double n) {
             config.differenceCoefficient = n;
+        }
+        public void compatibilityThreshold(double n) {
+            config.compatibilityThreshold = n;
         }
         public void addNodeMutationRate(double n) {
             config.addNodeMutationRate = n;
@@ -66,6 +71,9 @@ public class NEATConfig {
     }
     public double getDifferenceCoefficient() {
         return differenceCoefficient;
+    }
+    public double getCompatibilityThreshold() {
+        return compatibilityThreshold;
     }
     public double getAddNodeMutationRate() {
         return addNodeMutationRate;

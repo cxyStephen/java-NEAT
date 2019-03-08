@@ -22,4 +22,8 @@ public class Organism {
             out.add(output.value);
         return out;
     }
+
+    public void determineFitness() {
+        //TODO
+    }
 }
