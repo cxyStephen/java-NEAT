@@ -45,6 +45,12 @@ public class Connection {
             this.isDisabled = true;
     }
 
+    static Connection biasConnection(NEATConfig config, Node n) {
+        Connection connection = new Connection(config, config.biasNode(), n);
+        config.biasNode().connected.add(n);
+        return connection;
+    }
+
     public void mutateWeight() {
         //some chance to slightly adjust the weight
         if (rng.nextDouble() < config.getWeightPerturbRate())

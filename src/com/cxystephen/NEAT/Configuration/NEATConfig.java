@@ -1,8 +1,11 @@
 package com.cxystephen.NEAT.Configuration;
 
+import com.cxystephen.NEAT.Node;
 import java.util.List;
 
 public class NEATConfig {
+    private Node biasNode;
+
     private List<Double> inputs;
     private int numOutputs;
 
@@ -35,6 +38,9 @@ public class NEATConfig {
             config.numOutputs = numOutputs;
         }
 
+        public void biasValue(double n) {
+            config.biasNode = new Node(Node.NodeType.SENSOR, Node.INPUT_lAYER);
+        }
         public void excessCoefficient(double n) {
             config.excessCoefficient = n;
         }
@@ -74,6 +80,9 @@ public class NEATConfig {
         }
     }
 
+    public Node biasNode() {
+        return biasNode;
+    }
     public List<Double> getInputs() {
         return inputs;
     }

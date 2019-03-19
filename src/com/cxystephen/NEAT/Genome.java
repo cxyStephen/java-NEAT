@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Genome {
 
@@ -14,13 +16,16 @@ public class Genome {
 
     TreeSet<Node> nodes;
     Map<Connection, Connection> connections; //java set interface has no get method
+    Set<Connection> biasConnections;
     double fitness;
 
     Random rng = new Random();
 
     public Genome(NEATConfig config) {
         nodes = new TreeSet<>();
+        nodes.add(config.biasNode());
         connections = new HashMap<>();
+        biasConnections = new HashSet<>();
         this.config = config;
     }
 
@@ -30,7 +35,7 @@ public class Genome {
         mutateAddNode();
     }
 
-    public Genome cross(Genome other) {
+    public Genome cross(Genome other) { //TODO: THE PARENT CAN LIVE TO NEXT GENERATION - MAKE NEW OBJECTS??
         //disjoint and excess genes are inherited from more fit parent
         Genome fitterParent = this.fitness > other.fitness ? this : other;
         Genome otherParent = fitterParent == this ? other : this;
@@ -97,6 +102,11 @@ public class Genome {
             if (rng.nextDouble() < config.getWeightMutationRate())
                 connection.mutateWeight();
         }
+
+        for (Connection connection : biasConnections) {
+            if (rng.nextDouble() < config.getWeightMutationRate()) //TODO: different rate for bias weights?
+                connection.mutateWeight();
+        }
     }
 
     void mutateAddConnection() {
@@ -122,9 +132,11 @@ public class Genome {
                 out = temp;
             }
             newConnection = new Connection(config, in, out);
-        //reroll if the connection already exists
+        //reroll if the connection already exists.
+        // bias node cannot be chosen here since its already connected to all nodes
         } while (connections.containsKey(newConnection));
 
+        newConnection.in.connected.add(newConnection.out);
         connections.put(newConnection, newConnection);
     }
 
@@ -155,17 +167,23 @@ public class Genome {
             node.propagate(connections);
     }
 
+    void addNode(Node n) {
+        //bias needs to be attached to all non-input nodes
+        if (nodes.add(n) && n.type != NodeType.SENSOR)
+            biasConnections.add(Connection.biasConnection(config, n));
+    }
+
     void addConnection(Connection connection) {
         if (connection == null)
             return;
 
+        addNode(connection.in);
+        addNode(connection.out);
         connections.put(connection, connection);
-        nodes.add(connection.in);
-        nodes.add(connection.out);
     }
 
     Node randomNode() {
-        //generate a random index and iterate to that index
+        //generate a random index and iterate to that index TODO: exclude bias node?
         int randomIndex = rng.nextInt(nodes.size());
         Node random = nodes.first();
         for(int i = 0; i < randomIndex; i++)

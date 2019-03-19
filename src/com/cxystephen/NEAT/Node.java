@@ -1,12 +1,12 @@
 package com.cxystephen.NEAT;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Node implements Comparable<Node>{
 
-    static int globalId = 0;
+    static int globalId = 0; //TODO: this might need to go into config
 
     public enum NodeType {
         SENSOR,
@@ -21,16 +21,21 @@ public class Node implements Comparable<Node>{
     int id;
     int layer;
     double value;
-    List<Node> connected; //all nodes to forward propagate to
+    Set<Node> connected; //all nodes to forward propagate to
 
     private Node() {}
-    //TODO: bias nodes??
 
     public Node(NodeType type, int layer) {
         this.type = type;
         this.id = globalId++;
         this.layer = layer;
-        connected = new ArrayList<>();
+        connected = new HashSet<>();
+    }
+
+    static Node inputNode(double value) {
+        Node node = new Node(NodeType.SENSOR, INPUT_lAYER);
+        node.value = value;
+        return node;
     }
 
     public void propagate(Map<Connection, Connection> connections) {
