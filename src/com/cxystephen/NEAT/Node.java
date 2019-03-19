@@ -46,7 +46,7 @@ public class Node implements Comparable<Node>{
         for(Node other : connected) {
             Connection test = new Connection(null, this, other);
             Connection actual = connections.get(test);
-            if(actual != null)
+            if(actual != null && !actual.isDisabled)
                 other.value += value * actual.weight;
         }
     }
