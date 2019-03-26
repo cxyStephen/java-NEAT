@@ -193,10 +193,18 @@ public class Genome {
     Node randomNode() {
         //generate a random index and iterate to that index TODO: exclude bias node?
         int randomIndex = rng.nextInt(nodes.size());
-        Node random = nodes.first();
-        for(int i = 0; i < randomIndex; i++)
-            random = nodes.higher(random);
-        return random;
+        int counter = 0;
+        for (Node n : nodes) {
+            if (counter == randomIndex)
+                return n;
+            counter++;
+        }
+        return nodes.first(); //unreachable
+
+//        Node random = nodes.first();
+//        for(int i = 0; i < randomIndex; i++)
+//            random = nodes.higher(random);
+//        return random;
     }
 
     Connection randomConnection() {
