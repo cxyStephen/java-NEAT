@@ -21,7 +21,8 @@ public class Main {
         inputs.add(input1);
         inputs.add(input2);
 
-        NEATConfig config = new NEATConfig.NEATConfigBuilder(inputs, 1).build();
+        NEATConfig config = new NEATConfig.NEATConfigBuilder(inputs, 1)
+                            .populationSize(50).build();
         config.run();
     }
 }

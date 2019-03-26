@@ -14,6 +14,7 @@ public class Organism {
 
     NEATConfig config;
 
+    //TODO: why did i need this class again??
     public Organism(NEATConfig config) {
         //initialize default genome (no connections)
         this.config = config;

@@ -55,38 +55,49 @@ public class NEATConfig {
                 config.outputNodes.add(new Node(Node.NodeType.OUTPUT, Node.OUTPUT_LAYER));
         }
 
-        public void excessCoefficient(double n) {
+        public NEATConfigBuilder excessCoefficient(double n) {
             config.excessCoefficient = n;
+            return this;
         }
-        public void differenceCoefficient(double n) {
+        public NEATConfigBuilder differenceCoefficient(double n) {
             config.differenceCoefficient = n;
+            return this;
         }
-        public void compatibilityThreshold(double n) {
+        public NEATConfigBuilder compatibilityThreshold(double n) {
             config.compatibilityThreshold = n;
+            return this;
         }
-        public void addNodeMutationRate(double n) {
+        public NEATConfigBuilder addNodeMutationRate(double n) {
             config.addNodeMutationRate = n;
+            return this;
         }
-        public void addConnectionMutationRate(double n) {
+        public NEATConfigBuilder addConnectionMutationRate(double n) {
             config.addConnectionMutationRate = n;
+            return this;
         }
-        public void weightMutationRate(double n) {
+        public NEATConfigBuilder weightMutationRate(double n) {
             config.weightMutationRate = n;
+            return this;
         }
-        public void weightPerturbRate(double n) {
+        public NEATConfigBuilder weightPerturbRate(double n) {
             config.weightPerturbRate = n;
+            return this;
         }
-        public void inheritDisabledRate(double n) {
+        public NEATConfigBuilder inheritDisabledRate(double n) {
             config.inheritDisabledRate = n;
+            return this;
         }
-        public void populationSize(int n) {
+        public NEATConfigBuilder populationSize(int n) {
             config.populationSize = n;
+            return this;
         }
-        public void cullPercentage(double n) {
+        public NEATConfigBuilder cullPercentage(double n) {
             config.cullPercentage = n;
+            return this;
         }
-        public void stalenessThreshold(int n) {
+        public NEATConfigBuilder stalenessThreshold(int n) {
             config.stalenessThreshold = n;
+            return this;
         }
 
         public NEATConfig build() {
