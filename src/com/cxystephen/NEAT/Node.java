@@ -32,7 +32,7 @@ public class Node implements Comparable<Node>{
         connected = new HashSet<>();
     }
 
-    static Node inputNode(double value) {
+    public static Node inputNode(double value) {
         Node node = new Node(NodeType.SENSOR, INPUT_lAYER);
         node.value = value;
         return node;

@@ -8,7 +8,7 @@ public class Species {
 
     NEATConfig config;
 
-    static int globalId = 0;
+    static int globalId = 0; //TODO: this should probably go in config
 
     public List<Organism> organisms;
     private int numOrganisms;
@@ -23,6 +23,8 @@ public class Species {
         this.id = globalId++;
         organisms = new ArrayList<>();
         organisms.add(representative);
+        fitness += representative.genome.fitness;
+        System.out.println("NEW SPECIES CREATED " + id + " FITNESS " + fitness);
     }
 
 //    public Species(NEATConfig config, Species prevGeneration) {
@@ -44,6 +46,7 @@ public class Species {
 
     public boolean belongs(Organism organism) {
         double compatibility = organism.genome.compatibilityWith(representative().genome);
+        System.out.println("COMPAT+" +compatibility);
         return compatibility <= config.getCompatibilityThreshold();
     }
 
@@ -51,7 +54,7 @@ public class Species {
         return organisms.get(0);
     }
 
-    public double adjustedFitness() {
+    public double adjustedFitness() { System.out.println("ADJ FITNESS " + (fitness/organisms.size()));
         //adjust fitness to protect topological innovation
         return fitness / organisms.size();
     }
@@ -64,13 +67,21 @@ public class Species {
 
     public void cull() {
         Collections.sort(organisms, Comparator.comparingDouble(o -> o.genome.fitness));
-        int culledSize = (int) Math.round(numOrganisms * config.getCullPercentage());
-        while(organisms.size() > culledSize)
+        while(organisms.size() > culledSize())
             organisms.remove(organisms.size()-1);
+    }
+
+    public int culledSize() {
+        return (int) Math.round(numOrganisms * (1 - config.getCullPercentage()));
     }
 
     public void reproduce() {
         while (organisms.size() < numOrganisms)
             organisms.add(randomOrganism().createOffspring(randomOrganism()));
+    }
+
+    @Override
+    public String toString() {
+        return "species" + id + "\torganisms: " + numOrganisms + "\tactual orgs: "+ organisms.size();
     }
 }

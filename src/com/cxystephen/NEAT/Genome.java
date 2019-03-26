@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Genome {
 
@@ -16,7 +14,6 @@ public class Genome {
 
     TreeSet<Node> nodes;
     Map<Connection, Connection> connections; //java set interface has no get method
-    Set<Connection> biasConnections;
     double fitness;
 
     Random rng = new Random();
@@ -25,7 +22,6 @@ public class Genome {
         nodes = new TreeSet<>();
         nodes.add(config.biasNode());
         connections = new HashMap<>();
-        biasConnections = new HashSet<>();
         this.config = config;
     }
 
@@ -69,7 +65,11 @@ public class Genome {
         //measure the compatibility distance between this genome and another
         double excessCoeff = config.getExcessCoefficient();
         double differenceCoeff = config.getDifferenceCoefficient();
-
+//for(Connection c : connections.keySet())
+//    System.out.println(c);
+//System.out.println();
+//        for(Connection c : other.connections.keySet())
+//            System.out.println(c);
         //calculate disjoint and excess genes and average weight diff of matching genes
         int matchingGenes = 0;
         double totalWeightDiff = 0;
@@ -84,7 +84,8 @@ public class Genome {
         }
 
         int disjointGenes = this.connections.size() + other.connections.size() - 2 * matchingGenes;
-        double avgWeightDiff = totalWeightDiff / matchingGenes;
+        double avgWeightDiff = matchingGenes != 0 ? totalWeightDiff / matchingGenes : Double.MAX_VALUE;
+        //account for division by zero
 
         //normalize for genome size (N = larger of the genomes or 1 if both are small)
         int thisSize = this.connections.size();
@@ -102,11 +103,7 @@ public class Genome {
             if (rng.nextDouble() < config.getWeightMutationRate())
                 connection.mutateWeight();
         }
-
-        for (Connection connection : biasConnections) {
-            if (rng.nextDouble() < config.getWeightMutationRate()) //TODO: different rate for bias weights?
-                connection.mutateWeight();
-        }
+        //TODO: different rate for bias weights?
     }
 
     void mutateAddConnection() {
@@ -118,6 +115,8 @@ public class Genome {
         Connection newConnection;
         Node in;
         Node out;
+
+        int attempts = 0;
         do {
             //select two nodes that aren't on the same layer
             do {
@@ -132,9 +131,11 @@ public class Genome {
                 out = temp;
             }
             newConnection = new Connection(config, in, out);
+
+            attempts++; //abort after 100 attempts? TODO: potential infinite loop here
         //reroll if the connection already exists.
         // bias node cannot be chosen here since its already connected to all nodes
-        } while (connections.containsKey(newConnection));
+        } while (connections.containsKey(newConnection) && attempts < 100);
 
         newConnection.in.connected.add(newConnection.out);
         connections.put(newConnection, newConnection);
@@ -150,7 +151,12 @@ public class Genome {
             return;
 
         //choose a random connection to disable and split
-        Connection disabled = randomConnection().disable();
+        Connection disabled = randomConnection();
+        // can't split a bias connection TODO: probably a better way of doing this
+        if (disabled.in == config.biasNode())
+            return;
+        else
+            disabled.disable();
 
         int newLayer = disabled.in.layer/2 + disabled.out.layer/2;
         Node newNode = new Node(NodeType.HIDDEN, newLayer);
@@ -169,8 +175,10 @@ public class Genome {
 
     void addNode(Node n) {
         //bias needs to be attached to all non-input nodes
-        if (nodes.add(n) && n.type != NodeType.SENSOR)
-            biasConnections.add(Connection.biasConnection(config, n));
+        if (nodes.add(n) && n.type != NodeType.SENSOR) {
+            Connection biasConnection = Connection.biasConnection(config, n);
+            connections.put(biasConnection, biasConnection);
+        }
     }
 
     void addConnection(Connection connection) {

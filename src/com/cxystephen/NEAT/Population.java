@@ -26,12 +26,31 @@ public class Population {
         }
     }
 
+    public boolean tempmethod(){
+        if (topOrganism == null)
+            return true;
+        return topOrganism.genome.fitness < 4.0;
+    }
+
     public void produceNextGeneration() {
+        System.out.println("1GENERATION: " + generation + " SPECIES " + species.size() + " ORGANISMS " + organisms.size());
         mutateOrganisms();
-        speciate();
+
+        System.out.println("2GENERATION: " + generation + " SPECIES " + species.size() + " ORGANISMS " + organisms.size());
         determineFitness();
+        System.out.println("3GENERATION: " + generation + " SPECIES " + species.size() + " ORGANISMS " + organisms.size());
+
+        speciate();
+        for(Species s : species)
+            System.out.println(s);
+        System.out.println("4GENERATION: " + generation + " SPECIES " + species.size() + " ORGANISMS " + organisms.size());
         findTopOrganism();
+        System.out.println("5GENERATION: " + generation + " SPECIES " + species.size() + " ORGANISMS " + organisms.size());
+
         reproduceSpecies();
+        for(Species s : species)
+            System.out.println(s);
+        System.out.println("6GENERATION: " + generation + " SPECIES " + species.size() + " ORGANISMS " + organisms.size());
         generation++;
     }
 
@@ -64,13 +83,15 @@ public class Population {
         boolean newTopOrganism = false;
 
         for (Organism organism : organisms) {
-            if (organism.genome.fitness > topOrganism.genome.fitness) {
+            if (topOrganism == null)
+                topOrganism = organism;
+            else if (organism.genome.fitness > topOrganism.genome.fitness) {
                 topOrganism = organism;
                 newTopOrganism = true;
                 staleness = 0;
             }
         }
-
+System.out.println("TOP ORGANISM: " + topOrganism.genome.fitness);
         if(!newTopOrganism)
             staleness++;
     }
@@ -89,7 +110,7 @@ public class Population {
         // axe the entire species if it wouldn't contain anything
         for(int i = species.size() - 1; i >= 0; i--) {
             Species specie = species.get(i);
-            if (specie.determineNumOrganisms(totalFitness) == 0)
+            if (specie.determineNumOrganisms(totalFitness) == 0 || specie.culledSize() == 0)
                 species.remove(i);
         }
 

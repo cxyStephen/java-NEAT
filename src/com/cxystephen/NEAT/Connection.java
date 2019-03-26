@@ -37,6 +37,7 @@ public class Connection {
 
     public Connection(Connection parent) {
         //create connection by cloning
+        this.config = parent.config;
         this.in = parent.in;
         this.out = parent.out;
         this.weight = parent.weight;
@@ -84,6 +85,11 @@ public class Connection {
 
     public long getId() {
         return (((long) in.id) << Integer.SIZE) | out.id;
+    }
+
+    @Override
+    public String toString(){
+        return "CONNECTION " + in.id + "(LAYER " + in.layer + ") -> " + out.id + "(LAYER " + out.layer + ")";
     }
 
     @Override
